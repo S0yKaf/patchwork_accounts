@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Accounts::Concerns::CustomOauthBehavior
+module Accounts::Concerns::CustomOAuthBehavior
   extend ActiveSupport::Concern
   include NonChannelHelper
 
@@ -8,7 +8,7 @@ module Accounts::Concerns::CustomOauthBehavior
 
     if client_credentials? || authorization_code?
       super
-      return 
+      return
     end
 
     error_message = if ENV.fetch('LOCAL_DOMAIN', nil) == 'thebristolcable.social' || Rails.env.development?
@@ -28,7 +28,7 @@ module Accounts::Concerns::CustomOauthBehavior
     extracted = extract_error_message(error)
     response_body = { error: extracted[:message] }
     response_body[:data] = extracted[:data] if extracted[:data].present?
-    
+
     render json: response_body, status: 401
   end
 
@@ -54,11 +54,11 @@ module Accounts::Concerns::CustomOauthBehavior
     if response.is_a?(String) && response.include?('data: ')
       # Extract the error message part (before "data:")
       message = response.split(' data: ').first.strip
-      
+
       # Extract and parse the data part
       data_match = response.match(/data: (\{.*\})/)
       data = data_match ? eval(data_match[1]) : nil
-      
+
       { message: message, data: data }
     else
       { message: response.to_s, data: nil }
